@@ -10,14 +10,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('port', (process.env.PORT || 9001));
 
 app.get('/', function(req, res){
-  res.send('It works!');
+  res.send('This is EPIC Bot!');
 });
 
 app.post('/post', function(req, res){
   var parsed_url = url.format({
     pathname: 'https://api.genius.com/search',
     query: {
-      access_token: process.env.GENIUS_ACCESS,
+      access_token: 'KAjvmHsImd3zCMETV8UKSdFoG2WGEgPiyBB2kfSO6Cmy7D7rKO-3t532_kESqH6G',
       q: req.body.text
     }
   });
