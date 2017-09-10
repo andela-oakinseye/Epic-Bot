@@ -1,42 +1,29 @@
-var express = require('express');
-var app = express();
-var url = require('url');
-var request = require('request');
+require('dotenv').config();
+const express = require('express');
+const url = require('url');
+const request = require('request');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-var bodyParser = require('body-parser');
+
+// Mongoose Stuff here
+const Schema = mongoose.Schema;
+const User = require('./models/User');
+
+// Import Controllers
+const userController = require('./controllers/User')
+console.log(userController)
+
+const PORT = process.env.PORT || 9001
+const DB_URL = process.env.MONGODB_URI;
+mongoose.connect(DB_URL);
+
+// Import the models
+const app = express();
+app.use(require('express-status-monitor')()); // Monitor at /status
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set('port', (process.env.PORT || 9001));
+app.get('user', (req, res) => userController.createUser(req, res))
 
-app.get('/', function(req, res){
-  res.send('This is EPIC Bot!');
-});
-
-app.post('/post', function(req, res){
-  var parsed_url = url.format({
-    pathname: 'https://api.genius.com/search',
-    query: {
-      access_token: 'KAjvmHsImd3zCMETV8UKSdFoG2WGEgPiyBB2kfSO6Cmy7D7rKO-3t532_kESqH6G',
-      q: req.body.text
-    }
-  });
-
-  request(parsed_url, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var data = JSON.parse(body);
-      var first_url = data.response.hits[0].result.url;
-
-      var body = {
-        response_type: "in_channel",
-        text: first_url
-      };
-
-      res.send(body);
-    }
-  });
-});
-
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
